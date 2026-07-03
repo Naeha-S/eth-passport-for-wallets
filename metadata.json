@@ -1,0 +1,6 @@
+{
+  "name": "Wallet Passport",
+  "description": "Every wallet has a story. Discover yours. Wallet Passport transforms any wallet into an interactive digital identity, turning years of blockchain activity into a story anyone can understand.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
