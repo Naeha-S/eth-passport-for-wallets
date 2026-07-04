@@ -1,6 +1,6 @@
 import React, { useRef, useState } from "react";
 import { WalletPassportData } from "../types";
-import { ShieldCheck, Compass, Download, Check, RefreshCw, BarChart2, Share2, Printer, FileSpreadsheet } from "lucide-react";
+import { ShieldCheck, Compass, Download, Check, RefreshCw, BarChart2, Share2, Printer, FileSpreadsheet, Braces, Copy } from "lucide-react";
 
 interface SharePassportProps {
   data: WalletPassportData;
@@ -9,6 +9,7 @@ interface SharePassportProps {
 export default function SharePassport({ data }: SharePassportProps) {
   const [exporting, setExporting] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [copiedLink, setCopiedLink] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   // Stats display items
@@ -264,6 +265,68 @@ export default function SharePassport({ data }: SharePassportProps) {
     document.body.removeChild(link);
   };
 
+  const handleExportJSON = () => {
+    // Generate an NFT-compatible metadata JSON format for Web3 standard displays
+    const activeTimeline = data.timeline.filter(t => t.unlocked !== false);
+    const minYear = activeTimeline.length > 0 ? Math.min(...activeTimeline.map(t => t.year)) : 2021;
+    const maxYear = activeTimeline.length > 0 ? Math.max(...activeTimeline.map(t => t.year)) : 2026;
+    const totalYearsActive = activeTimeline.length > 0 ? Math.max(1, maxYear - minYear + 1) : 0;
+    
+    const metadata = {
+      name: `Wallet Passport: ${data.nickname}`,
+      description: `Official cryptographic chronicle and identity proof for EVM wallet ${data.address}. Analyzed via decentralized heuristics validation.`,
+      image: "ipfs://QmdH6qgUfEw6G89A5qf6hA1B3c4D5e6F7g8H9i0J1k2L3",
+      external_url: "https://wallet-passport.authority",
+      attributes: [
+        { "trait_type": "Passport Number", "value": `#WP-${data.passportNumber}` },
+        { "trait_type": "Sovereign Characterization", "value": data.occupation },
+        { "trait_type": "Behavioral Archetype", "value": data.identityType },
+        { "trait_type": "Operational Score", "value": data.activityScore, "max_value": 100 },
+        { "trait_type": "Sovereign Risk Level", "value": data.riskRating },
+        { "trait_type": "Lifespan Years Active", "value": totalYearsActive },
+        { "trait_type": "EVM Transactions Count", "value": data.stats.transactionsCount },
+        { "trait_type": "Networks Explored Count", "value": data.stats.chainsCount }
+      ],
+      passport_records: {
+        document_id: `WP-${data.passportNumber}`,
+        subject_address: data.address,
+        regulatory_rating: data.riskRating,
+        activity_metrics: {
+          transactions_count: data.stats.transactionsCount,
+          contracts_called: data.stats.contractsCount,
+          realms_visited: data.stats.chainsCount,
+          largest_transfer_eth: data.stats.largestTxEth,
+          average_transfer_eth: data.stats.avgTxEth
+        },
+        curated_traits: data.dna.map(trait => ({
+          trait: trait.subject,
+          expression_level: `${trait.value}%`
+        })),
+        milestones: activeTimeline.map(event => ({
+          epoch: event.year,
+          milestone: event.title,
+          description: event.description
+        })),
+        unlocked_achievements: data.achievements
+          .filter(a => a.unlocked !== false)
+          .map(a => ({
+            badge_id: a.id,
+            title: a.title,
+            rarity: a.rarity,
+            unlocked_timestamp: "Verified State"
+          }))
+      }
+    };
+
+    const jsonString = `data:text/json;charset=utf-8,${encodeURIComponent(JSON.stringify(metadata, null, 2))}`;
+    const link = document.createElement("a");
+    link.setAttribute("href", jsonString);
+    link.setAttribute("download", `wallet_passport_metadata_${data.nickname.toLowerCase().replace(/\s+/g, "_")}.json`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <div id="stats-share-page" className="w-full grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
       {/* LEFT COLUMN: Detailed stats breakdown */}
@@ -364,6 +427,48 @@ export default function SharePassport({ data }: SharePassportProps) {
           </div>
         </div>
 
+        {/* Dynamic Mobile Share QR Code Section */}
+        <div id="passport-share-qrcode-block" className="w-full max-w-[400px] bg-black/45 border border-editorial-border p-4 mb-6 flex items-center gap-4">
+          <div className="shrink-0 relative p-2 bg-black border border-editorial-border/60">
+            {/* Elegant Design Corner Crop Marks / Scanners */}
+            <span className="absolute top-0 left-0 w-2 h-2 border-t-2 border-l-2 border-editorial-accent/60"></span>
+            <span className="absolute top-0 right-0 w-2 h-2 border-t-2 border-r-2 border-editorial-accent/60"></span>
+            <span className="absolute bottom-0 left-0 w-2 h-2 border-b-2 border-l-2 border-editorial-accent/60"></span>
+            <span className="absolute bottom-0 right-0 w-2 h-2 border-b-2 border-r-2 border-editorial-accent/60"></span>
+            
+            <img 
+              src={`https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=${encodeURIComponent(window.location.origin + "/?address=" + data.address)}&color=62929e&bgcolor=141517`}
+              alt="Wallet Passport Mobile Share Link QR Code"
+              className="w-20 h-20 select-none border border-editorial-border/20"
+              referrerPolicy="no-referrer"
+            />
+          </div>
+          <div className="flex-1 space-y-1.5 min-w-0">
+            <div>
+              <span className="text-[8px] font-mono tracking-widest text-editorial-accent font-bold uppercase block">SOVEREIGN MOBILE SCAN</span>
+              <h4 className="font-serif text-xs text-editorial-paper font-medium leading-tight truncate">Mobile Passport Link</h4>
+            </div>
+            <p className="text-[10px] text-gray-400 font-sans leading-relaxed">
+              Scan this dynamic QR signature to instantly view and verify this passport profile on any mobile browser.
+            </p>
+            <div className="pt-0.5">
+              <button 
+                id="copy-passport-url-btn"
+                onClick={() => {
+                  const url = `${window.location.origin}/?address=${data.address}`;
+                  navigator.clipboard.writeText(url);
+                  setCopiedLink(true);
+                  setTimeout(() => setCopiedLink(false), 2000);
+                }}
+                className="text-[9px] font-mono font-bold text-editorial-accent hover:text-white transition-all flex items-center gap-1 border border-editorial-accent/30 hover:border-editorial-accent px-2 py-1 bg-editorial-accent/5 hover:bg-editorial-accent/10 active:translate-y-[1px] cursor-pointer"
+              >
+                {copiedLink ? <Check className="w-2.5 h-2.5 text-emerald-500" /> : <Copy className="w-2.5 h-2.5" />}
+                <span>{copiedLink ? "LINK COPIED" : "COPY WALLET URL"}</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
         {/* Hidden Export Canvas */}
         <canvas ref={canvasRef} className="hidden" />
 
@@ -409,9 +514,18 @@ export default function SharePassport({ data }: SharePassportProps) {
             <FileSpreadsheet className="w-4 h-4" />
             <span>Download Ledger Data (CSV)</span>
           </button>
+
+          <button
+            id="export-json-btn"
+            onClick={handleExportJSON}
+            className="w-full py-3.5 bg-transparent hover:bg-editorial-accent/10 border border-editorial-accent text-editorial-accent font-sans font-bold uppercase tracking-[0.2em] text-xs rounded-none transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer"
+          >
+            <Braces className="w-4 h-4" />
+            <span>Download Web3 Metadata (JSON)</span>
+          </button>
           
           <p className="text-[10px] text-gray-500 font-sans italic text-center">
-            Renders a premium physical identity card at high resolution (PNG), triggers print dialog to save the entire Multi-Page booklet as an ink-friendly PDF, or exports transaction data to high-fidelity spreadsheet format (CSV).
+            Renders a premium physical identity card at high resolution (PNG), triggers print dialog to save the entire Multi-Page booklet as an ink-friendly PDF, exports transaction data to spreadsheet format (CSV), or generates standardized ERC-721 compatible JSON metadata for Web3 portfolio trackers.
           </p>
         </div>
       </div>

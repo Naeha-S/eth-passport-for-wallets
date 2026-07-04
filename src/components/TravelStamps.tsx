@@ -56,15 +56,25 @@ export default function TravelStamps({ stamps }: TravelStampsProps) {
         </div>
 
         {stamps.map((stamp, idx) => {
-          const tiltClass = tilts[idx % tilts.length];
+          const charSum = stamp.chain.split("").reduce((sum, c) => sum + c.charCodeAt(0), 0);
+          const opacityValue = 0.82 + (charSum % 15) * 0.012; // Between 0.82 and 1.0 opacity
+          const rotDegrees = -10 + (charSum % 21); // Bounded between -10deg and +10deg
+          const scaleVal = 0.96 + (charSum % 5) * 0.015; // Natural size variance
           const stampStyleType = idx % 3;
+
+          const customStyle = {
+            opacity: opacityValue,
+            transform: `rotate(${rotDegrees}deg) scale(${scaleVal})`,
+            filter: "contrast(1.04) saturate(0.92)"
+          };
 
           if (stampStyleType === 0) {
             // Style 1: Vintage dashed black/gray circular stamp
             return (
               <div
                 key={stamp.chain}
-                className={`w-36 h-36 border border-gray-600 border-dashed rounded-full flex flex-col items-center justify-center text-center p-3 transform ${tiltClass} transition duration-300 hover:scale-105 select-none mx-auto`}
+                style={customStyle}
+                className="w-36 h-36 border border-gray-600 border-dashed rounded-full flex flex-col items-center justify-center text-center p-3 transition-all duration-300 hover:scale-105 hover:opacity-100! select-none mx-auto"
               >
                 <div className="text-[7px] text-gray-500 tracking-wider uppercase mb-1 font-mono">GENESIS VERIFIED</div>
                 {renderStampFlag(stamp.flag, true)}
@@ -85,7 +95,8 @@ export default function TravelStamps({ stamps }: TravelStampsProps) {
             return (
               <div
                 key={stamp.chain}
-                className={`w-36 h-36 border-2 border-editorial-accent rounded-full p-1.5 transform ${tiltClass} transition duration-300 hover:scale-105 select-none mx-auto`}
+                style={customStyle}
+                className="w-36 h-36 border-2 border-editorial-accent rounded-full p-1.5 transition-all duration-300 hover:scale-105 hover:opacity-100! select-none mx-auto"
               >
                 <div className="border border-editorial-accent w-full h-full rounded-full flex flex-col items-center justify-center text-center p-2 text-editorial-accent">
                   <span className="text-[7px] font-sans font-bold uppercase tracking-widest block mb-0.5">L2 RESIDENT</span>
@@ -107,7 +118,8 @@ export default function TravelStamps({ stamps }: TravelStampsProps) {
             return (
               <div
                 key={stamp.chain}
-                className={`w-36 h-36 bg-editorial-paper text-[#0F0F0F] rounded-none flex flex-col items-center justify-center text-center p-4 transform ${tiltClass} transition duration-300 hover:scale-105 select-none mx-auto shadow-lg`}
+                style={customStyle}
+                className="w-36 h-36 bg-editorial-paper text-[#0F0F0F] rounded-none flex flex-col items-center justify-center text-center p-4 transition-all duration-300 hover:scale-105 hover:opacity-100! select-none mx-auto shadow-lg"
               >
                 <span className="text-[7px] uppercase font-sans font-black tracking-widest text-[#0f0f0f]/40 mb-1">OFFICIAL VISA</span>
                 {renderStampFlag(stamp.flag, false)}

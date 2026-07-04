@@ -443,7 +443,30 @@ app.post("/api/analyze", async (req: Request, res: Response): Promise<any> => {
     // Generate core stats using heuristic engine
     const passportData = analyzeWallet(address);
 
-    // Call Gemini API to write a storytelling biography
+    // Initial load returns empty biography to save tokens
+    const biography = "";
+
+    res.json({
+      ...passportData,
+      biography
+    });
+  } catch (err: any) {
+    console.error("Server error:", err);
+    res.status(500).json({ error: "Internal server error analyzing passport" });
+  }
+});
+
+// New On-Demand Biography Generation Endpoint
+app.post("/api/generate-biography", async (req: Request, res: Response): Promise<any> => {
+  try {
+    const { address } = req.body;
+    if (!address) {
+      return res.status(400).json({ error: "Wallet address is required" });
+    }
+
+    // Generate core stats using heuristic engine to build the prompt context
+    const passportData = analyzeWallet(address);
+
     let biography = "";
     try {
       const prompt = `Write a highly sophisticated, in-depth analytical dossier and narrative synthesis for a blockchain address with the on-chain moniker "${passportData.nickname}".
@@ -469,17 +492,14 @@ Write exactly one elegant, highly objective, analytical paragraph of 4-5 sentenc
       biography = response.text?.trim() || "";
     } catch (apiError) {
       console.error("Gemini API call failed:", apiError);
-      // Fallback biography
+      // Premium deterministic fallback biography
       biography = `Representing an active participant in decentralized ledger ecosystems, ${passportData.nickname} established its initial on-chain presence in ${2026 - passportData.stats.walletAgeYears}. Operating primarily as a ${passportData.occupation}, this address has demonstrated structured interaction patterns across ${passportData.stats.chainsCount} independent cryptographic networks, committing a cumulative total of ${passportData.stats.transactionsCount} signed ledger entries. By systematically engaging with ${passportData.stats.contractsCount} distinct smart contract deployments, they have achieved core milestones, including ${passportData.achievements.filter(a => a.unlocked)[0]?.title || "Initial Ledger Access"}. Exhibiting the behavioral characteristics of a ${passportData.identityType}, the address prioritizes long-term capital efficiency and systematic governance participation over transient asset rotations.`;
     }
 
-    res.json({
-      ...passportData,
-      biography
-    });
+    res.json({ biography });
   } catch (err: any) {
-    console.error("Server error:", err);
-    res.status(500).json({ error: "Internal server error analyzing passport" });
+    console.error("Biography generation error:", err);
+    res.status(500).json({ error: "Internal server error generating biography" });
   }
 });
 

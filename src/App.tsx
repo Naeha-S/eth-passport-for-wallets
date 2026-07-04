@@ -17,6 +17,7 @@ export default function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [statusMessage, setStatusMessage] = useState("");
   const [currentTab, setCurrentTab] = useState<"identity" | "proficiency" | "efficiency" | "stamps" | "milestones" | "chronicle" | "export">("identity");
+  const [hoveredTab, setHoveredTab] = useState<string | null>(null);
 
   // Step-by-step loading messaging sequence
   const triggerLoadingMessages = () => {
@@ -24,7 +25,7 @@ export default function App() {
       "Accessing Decentralized Ledger Archives...",
       "Reassembling transaction blocks and signatures...",
       "Extrapolating behavioral DNA coefficients...",
-      "Consulting Gemini AI to write custom biography..."
+      "Compiling multi-chain passport metrics..."
     ];
 
     setStatusMessage(messages[0]);
@@ -119,6 +120,17 @@ export default function App() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [passportData, currentTab]);
 
+  // Tab authority descriptions
+  const tabDescriptions: Record<string, string> = {
+    identity: "Verifies sovereign decentralized identity parameters, address classifications, and registry seals.",
+    proficiency: "Official audit of contract complex deployments and dynamic multi-protocol interaction balance.",
+    efficiency: "Calculates gas conservation metrics, MEV leakage telemetry, and routing optimizations.",
+    stamps: "Chronicle of historical multi-chain visa stamps, network bridges, and ecosystem boundaries.",
+    milestones: "Consolidated record of active epochs and badge honors compared against power users.",
+    chronicle: "Unlocks personalized behavioral biography narrative and core on-chain DNA trait mapping.",
+    export: "Consolidated ledger exports, PDF booklet printer, and Web3 portfolio-compatible JSON metadata."
+  };
+
   // Tab configurations
   const tabConfig = [
     { id: "identity" as const, label: "Identity Profile", icon: BookOpen },
@@ -155,9 +167,9 @@ export default function App() {
               <button
                 id="reset-search-btn"
                 onClick={handleReset}
-                className="flex items-center gap-1.5 px-3.5 py-1.5 bg-editorial-card hover:bg-[#252525] border border-editorial-border hover:border-editorial-border-light rounded-sm text-xs font-sans tracking-wider uppercase text-gray-400 hover:text-editorial-paper transition duration-200 cursor-pointer"
+                className="flex items-center gap-1.5 px-2.5 py-1 h-7.5 bg-editorial-card hover:bg-black/40 border border-editorial-border hover:border-editorial-border-light rounded-none text-[10px] font-sans tracking-wider uppercase text-gray-400 hover:text-editorial-paper transition-all duration-200 active:translate-y-[1px] cursor-pointer"
               >
-                <Undo2 className="w-3.5 h-3.5" />
+                <Undo2 className="w-3 h-3" />
                 <span>Scan Another Wallet</span>
               </button>
             </div>
@@ -194,7 +206,7 @@ export default function App() {
                 {/* Address indicator header block */}
                 <div className="p-4 bg-editorial-card border border-editorial-border rounded-none flex flex-col md:flex-row md:items-center justify-between gap-3 text-sm font-mono">
                   <div className="flex items-center gap-2 text-gray-400">
-                    <span className="w-2 h-2 rounded-full bg-editorial-accent animate-pulse"></span>
+                    <span className="w-2 h-2 bg-editorial-accent animate-pulse"></span>
                     <span className="font-sans font-bold text-xs uppercase tracking-wider">Scanned Address:</span>
                     <span className="text-editorial-paper select-all truncate max-w-xs md:max-w-none">{passportData.address}</span>
                   </div>
@@ -202,6 +214,26 @@ export default function App() {
                     <Info className="w-3.5 h-3.5 text-editorial-accent" />
                     <span>Issuing State: EVM Ledger Authority</span>
                   </div>
+                </div>
+
+                {/* Passport Authority Interactive Decoder Bar */}
+                <div id="passport-authority-decoder" className="h-auto py-2.5 md:py-0 md:h-9 overflow-hidden flex flex-col md:flex-row md:items-center justify-between border border-dashed border-editorial-border/60 bg-black/25 px-4 text-[10px] font-mono uppercase tracking-wider text-gray-400 gap-1">
+                  <div className="flex flex-col md:flex-row md:items-center gap-1.5 truncate">
+                    <span className="text-editorial-accent font-bold whitespace-nowrap">PASSPORT AUTHORITY PROTOCOL //</span>
+                    <AnimatePresence mode="wait">
+                      <motion.span
+                        key={hoveredTab || currentTab}
+                        initial={{ opacity: 0, y: 8 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -8 }}
+                        transition={{ duration: 0.15 }}
+                        className="text-gray-300 italic truncate"
+                      >
+                        {tabDescriptions[hoveredTab || currentTab]}
+                      </motion.span>
+                    </AnimatePresence>
+                  </div>
+                  <span className="text-gray-600 hidden md:inline whitespace-nowrap">SYS_SECURE_AUTH</span>
                 </div>
 
                 {/* Physical Booklet Page Tabs */}
@@ -214,10 +246,12 @@ export default function App() {
                         id={`passport-tab-${tab.id}`}
                         key={tab.id}
                         onClick={() => setCurrentTab(tab.id)}
-                        className={`flex items-center gap-1.5 px-4 py-3 border-t border-x text-xs font-sans font-bold uppercase tracking-wider whitespace-nowrap transition-all duration-200 cursor-pointer ${
+                        onMouseEnter={() => setHoveredTab(tab.id)}
+                        onMouseLeave={() => setHoveredTab(null)}
+                        className={`flex items-center gap-1.5 px-4 py-3 border-t-2 border-x text-xs font-sans font-bold uppercase tracking-wider whitespace-nowrap transition-all duration-200 cursor-pointer ${
                           isActive 
-                            ? "bg-editorial-card border-editorial-border text-editorial-accent shadow-[0_-2px_8px_rgba(242,125,38,0.06)]" 
-                            : "bg-black/30 border-transparent text-gray-500 hover:text-gray-300 hover:bg-black/15"
+                            ? "bg-editorial-card border-t-editorial-accent border-x-editorial-border text-editorial-accent shadow-[0_-3px_12px_rgba(98,146,158,0.12)]" 
+                            : "bg-black/30 border-t-transparent border-x-transparent text-gray-500 hover:text-gray-300 hover:bg-black/15"
                         }`}
                       >
                         <Icon className={`w-3.5 h-3.5 ${isActive ? "text-editorial-accent" : "text-gray-500"}`} />
@@ -228,15 +262,15 @@ export default function App() {
                 </div>
 
                 {/* Booklet Core Pages Panel with page-flip animation */}
-                <div id="passport-content-panel" className="w-full relative" style={{ perspective: "1200px" }}>
+                <div id="passport-content-panel" className="w-full relative" style={{ perspective: "1500px" }}>
                   <AnimatePresence mode="wait">
                     <motion.div
                       key={currentTab}
-                      initial={{ opacity: 0, scale: 0.98, rotateY: -8, transformOrigin: "left center" }}
-                      animate={{ opacity: 1, scale: 1, rotateY: 0 }}
-                      exit={{ opacity: 0, scale: 0.98, rotateY: 8 }}
-                      transition={{ duration: 0.35, ease: "easeInOut" }}
-                      style={{ transformStyle: "preserve-3d" }}
+                      initial={{ opacity: 0, rotateY: -65, transformOrigin: "left center", scale: 0.96 }}
+                      animate={{ opacity: 1, rotateY: 0, scale: 1 }}
+                      exit={{ opacity: 0, rotateY: 65, transformOrigin: "left center", scale: 0.96 }}
+                      transition={{ duration: 0.5, ease: [0.25, 0.8, 0.25, 1] }}
+                      style={{ transformStyle: "preserve-3d", backfaceVisibility: "hidden" }}
                     >
                       {currentTab === "identity" && (
                         <PassportProfile data={passportData} />
@@ -258,6 +292,8 @@ export default function App() {
                           biography={passportData.biography}
                           personality={passportData.personality}
                           nickname={passportData.nickname}
+                          address={passportData.address}
+                          onUpdateBiography={(bio) => setPassportData(prev => prev ? { ...prev, biography: bio } : null)}
                         />
                       )}
                       {currentTab === "export" && (

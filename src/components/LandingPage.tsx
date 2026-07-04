@@ -136,36 +136,53 @@ export default function LandingPage({ onSearch, isLoading, statusMessage }: Land
       </div>
 
       {/* Main Search Interaction Kiosk Card */}
-      <div className="w-full bg-editorial-card/90 backdrop-blur-xl border border-editorial-border rounded-none p-6 md:p-8 shadow-2xl relative overflow-hidden max-w-2xl mb-12 z-10 paper-texture">
+      <div className="w-full bg-editorial-card/90 backdrop-blur-xl border border-editorial-border rounded-none p-6 md:p-8 shadow-2xl relative overflow-hidden max-w-2xl mt-4 mb-16 z-10 paper-texture">
         <div className="absolute top-0 left-0 w-full h-[3px] bg-editorial-accent"></div>
 
         {!isLoading ? (
           <form id="wallet-search-form" onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-2">
-              <label htmlFor="wallet-address" className="block text-[10px] font-sans font-bold uppercase tracking-[0.2em] text-gray-300">
-                EVM Wallet Address or Web3 Identifier
-              </label>
-              <div className="relative">
+              <div className="flex justify-between items-center">
+                <label htmlFor="wallet-address" className="block text-[10px] font-sans font-bold uppercase tracking-[0.2em] text-gray-300">
+                  EVM Wallet Address or Web3 Identifier
+                </label>
+                <span className="hidden sm:inline text-[9px] font-mono text-gray-500 uppercase">Input Format: Hex or ENS</span>
+              </div>
+              <div className="relative group">
                 <input
                   id="wallet-address"
                   type="text"
                   placeholder="0xA4...9F or vitalik.eth"
                   value={address}
                   onChange={(e) => setAddress(e.target.value)}
-                  className="w-full px-4 py-4 pl-12 bg-black/60 border border-editorial-border rounded-none text-editorial-paper placeholder-gray-500 focus:outline-none focus:border-editorial-accent focus:ring-1 focus:ring-editorial-accent transition duration-200 font-mono text-sm"
+                  className="w-full px-4 py-4 pl-12 pr-16 bg-black/60 border border-editorial-border rounded-none text-editorial-paper placeholder-gray-500 focus:outline-none focus:border-editorial-accent focus:ring-1 focus:ring-editorial-accent/50 transition-all duration-350 font-mono text-sm"
                 />
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500 group-focus-within:text-editorial-accent transition-colors duration-300" />
+                <div className="absolute right-4 top-1/2 -translate-y-1/2 hidden sm:flex items-center gap-1.5 px-2 py-1 bg-black/40 border border-editorial-border/60 text-[8px] font-mono text-gray-500 select-none">
+                  <span>ENTER</span>
+                  <span className="text-gray-600 font-sans">↵</span>
+                </div>
               </div>
-              {error && <p className="text-red-400 text-xs mt-1 font-sans font-semibold">{error}</p>}
+              {error ? (
+                <p className="text-red-400 text-xs mt-1.5 font-sans font-semibold flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 bg-red-500 rounded-none inline-block"></span>
+                  {error}
+                </p>
+              ) : (
+                <div className="flex items-center justify-between text-[9px] font-mono text-gray-500 pt-0.5">
+                  <span>* Enter a 40-character hexadecimal key or .eth tag</span>
+                  <span>Ledger Status: Connected</span>
+                </div>
+              )}
             </div>
 
             <button
               id="generate-passport-btn"
               type="submit"
-              className="w-full py-4 bg-editorial-accent hover:bg-[#546a7b] text-white font-sans font-bold uppercase tracking-[0.2em] text-xs rounded-none transition-all duration-300 shadow-lg shadow-editorial-accent/20 flex items-center justify-center gap-2 cursor-pointer"
+              className="w-full py-4 bg-editorial-accent hover:bg-editorial-accent/90 text-white font-sans font-bold uppercase tracking-[0.25em] text-xs rounded-none transition-all duration-300 shadow-md shadow-editorial-accent/10 hover:shadow-lg hover:shadow-editorial-accent/15 flex items-center justify-center gap-2.5 cursor-pointer relative overflow-hidden group border border-editorial-border-light/20 hover:border-editorial-border-light/40 active:translate-y-[1px]"
             >
-              <Compass className="w-5 h-5" />
-              Generate Wallet Passport
+              <Compass className="w-4 h-4 transition-transform duration-500 group-hover:rotate-45" />
+              <span>Generate Wallet Passport</span>
             </button>
           </form>
         ) : (

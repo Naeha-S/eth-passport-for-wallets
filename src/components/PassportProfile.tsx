@@ -56,20 +56,28 @@ export default function PassportProfile({ data }: PassportProfileProps) {
     for (let i = 0; i < address.length; i++) {
       sum += address.charCodeAt(i);
     }
-    const colorA = `hsl(${sum % 360}, 65%, 45%)`;
-    const colorB = `hsl(( ${sum} + 120) % 360, 75%, 20%)`;
+    
+    // Sophisticated, muted color palettes to avoid bright AI random HSL values
+    const sophisticatedPalettes = [
+      { colorA: "hsl(200, 25%, 50%)", colorB: "hsl(215, 30%, 15%)" }, // Slate Blue / Dark Steel
+      { colorA: "hsl(35, 35%, 55%)", colorB: "hsl(25, 40%, 15%)" },  // Amber-Gold / Burnt Sienna
+      { colorA: "hsl(160, 20%, 45%)", colorB: "hsl(175, 25%, 15%)" }, // Sage Green / Deep Pine
+      { colorA: "hsl(10, 25%, 50%)", colorB: "hsl(350, 30%, 15%)" }, // Terracotta / Crimson Ash
+      { colorA: "hsl(280, 15%, 45%)", colorB: "hsl(295, 20%, 15%)" }, // Muted Heather / Dark Aubergine
+    ];
+    const palette = sophisticatedPalettes[sum % sophisticatedPalettes.length];
     const numBlades = 5 + (sum % 8);
 
     return (
       <div className="w-24 h-24 rounded-none bg-black/60 border border-editorial-border-light flex items-center justify-center relative overflow-hidden p-1 shadow-inner group">
         <div 
-          className="w-full h-full rounded-full opacity-70 animate-pulse duration-[4000ms]"
+          className="w-full h-full rounded-full opacity-70 animate-[spin_25s_linear_infinite]"
           style={{
-            background: `radial-gradient(circle, ${colorA} 0%, ${colorB} 100%)`
+            background: `conic-gradient(from 0deg, ${palette.colorA} 0%, ${palette.colorB} 50%, ${palette.colorA} 100%)`
           }}
         />
         {/* Abstract pattern lines overlay */}
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-40">
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-45">
           <svg viewBox="0 0 100 100" className="w-full h-full text-editorial-accent">
             <circle cx="50" cy="50" r="40" fill="none" stroke="currentColor" strokeWidth="1" strokeDasharray="3 3" />
             <circle cx="50" cy="50" r="25" fill="none" stroke="currentColor" strokeWidth="1" />
@@ -104,17 +112,19 @@ export default function PassportProfile({ data }: PassportProfileProps) {
         
         {/* Passport Header */}
         <div className="flex items-start justify-between border-b border-editorial-border pb-6 mb-6">
-          <div className="space-y-1">
-            <div className="text-editorial-accent font-sans tracking-[0.2em] text-[10px] uppercase font-bold">
-              Web3 Passport Authority
+          <div className="space-y-1.5">
+            <div className="text-editorial-accent font-mono tracking-[0.25em] text-[9px] uppercase font-medium flex items-center gap-1.5">
+              <span>Web3 Passport Authority</span>
+              <span className="text-editorial-border-light">•</span>
+              <span className="text-gray-400">DEC_SEC_9</span>
             </div>
-            <h2 className="text-xl font-light font-serif text-editorial-paper uppercase tracking-tight">
+            <h2 className="text-2xl font-light font-serif text-editorial-paper uppercase tracking-wide">
               Official Identity Document
             </h2>
           </div>
           <div className="text-right">
-            <span className="text-[9px] font-sans font-bold uppercase tracking-widest text-gray-500">Passport No.</span>
-            <p className="text-sm font-mono font-bold text-editorial-accent">#WP-{data.passportNumber}</p>
+            <span className="text-[9px] font-mono font-medium uppercase tracking-[0.15em] text-gray-500">Passport No.</span>
+            <p className="text-sm font-mono font-bold text-editorial-accent tracking-wider">#WP-{data.passportNumber}</p>
           </div>
         </div>
 
@@ -125,7 +135,7 @@ export default function PassportProfile({ data }: PassportProfileProps) {
             {getBiometricSeal(data.address)}
             
             <div className="text-center">
-              <span className="text-[10px] uppercase font-sans font-bold tracking-wider text-gray-500 block">Activity Level</span>
+              <span className="text-[10px] uppercase font-sans font-medium tracking-wider text-gray-500 block">Activity Level</span>
               <div className="mt-2.5 flex items-center justify-center gap-1.5 px-3 py-1 bg-editorial-accent/10 border border-editorial-accent/30 rounded-none text-editorial-accent text-xs font-semibold">
                 <Sparkles className="w-3.5 h-3.5 animate-pulse" />
                 <span>Score: {data.activityScore}/100</span>
@@ -135,18 +145,18 @@ export default function PassportProfile({ data }: PassportProfileProps) {
 
           {/* Details Form Grid */}
           <div className="flex-1 grid grid-cols-2 gap-y-5 gap-x-6 text-sm">
-            <div className="col-span-2 border-b border-editorial-border pb-2">
-              <label className="block text-[10px] uppercase tracking-[0.2em] opacity-40 mb-1 font-sans font-bold">Identity Epithet</label>
+            <div className="col-span-2 border-b border-dashed border-editorial-border/60 pb-3">
+              <label className="block text-[10px] uppercase tracking-[0.2em] opacity-40 mb-1 font-sans font-medium">Identity Epithet</label>
               <h2 className="text-3xl leading-none font-serif text-editorial-paper font-medium">{data.nickname}</h2>
             </div>
 
             <div>
-              <label className="block text-[10px] uppercase tracking-[0.2em] opacity-40 mb-1 font-sans font-bold">Occupation</label>
+              <label className="block text-[10px] uppercase tracking-[0.2em] opacity-40 mb-1 font-sans font-medium">Occupation</label>
               <p className="text-lg font-serif italic text-editorial-paper leading-tight">{data.occupation}</p>
             </div>
 
             <div>
-              <label className="block text-[10px] uppercase tracking-[0.2em] opacity-40 mb-1 font-sans font-bold">Risk Level</label>
+              <label className="block text-[10px] uppercase tracking-[0.2em] opacity-40 mb-1 font-sans font-medium">Risk Level</label>
               <p className={`inline-flex items-center gap-1 text-lg font-serif italic ${
                 data.riskRating === "Low" ? "text-emerald-500" : data.riskRating === "Medium" ? "text-amber-500" : "text-rose-500"
               }`}>
@@ -160,17 +170,17 @@ export default function PassportProfile({ data }: PassportProfileProps) {
             </div>
 
             <div>
-              <label className="block text-[10px] uppercase tracking-[0.2em] opacity-40 mb-1 font-sans font-bold">Wallet Age</label>
+              <label className="block text-[10px] uppercase tracking-[0.2em] opacity-40 mb-1 font-sans font-medium">Wallet Age</label>
               <p className="text-lg font-serif italic text-editorial-paper">{data.stats.walletAgeYears} Years</p>
             </div>
 
             <div>
-              <label className="block text-[10px] uppercase tracking-[0.2em] opacity-40 mb-1 font-sans font-bold">Activation Date</label>
+              <label className="block text-[10px] uppercase tracking-[0.2em] opacity-40 mb-1 font-sans font-medium">Activation Date</label>
               <p className="font-mono text-sm text-editorial-paper mt-1">{data.createdDate}</p>
             </div>
 
-            <div className="col-span-2 border-t border-editorial-border pt-3.5 mt-1">
-              <label className="block text-[10px] uppercase tracking-[0.2em] opacity-40 mb-1.5 font-sans font-bold">Characterization</label>
+            <div className="col-span-2 border-t border-dashed border-editorial-border/60 pt-4 mt-1">
+              <label className="block text-[10px] uppercase tracking-[0.2em] opacity-40 mb-1.5 font-sans font-medium">Characterization</label>
               <p className="text-xs leading-relaxed opacity-80 font-sans">
                 This entity functions primarily as a <span className="italic font-serif text-editorial-accent text-sm">{data.identityType}</span> within the multi-chain decentralized ecosystem. Observed activity profiles align with structured ledger interactions and strategic capital deployment.
               </p>
@@ -179,12 +189,12 @@ export default function PassportProfile({ data }: PassportProfileProps) {
         </div>
 
         {/* Footer Seal */}
-        <div className="border-t border-editorial-border pt-4 mt-6 flex items-center justify-between text-[11px] text-gray-500 font-mono">
+        <div className="border-t border-dashed border-editorial-border/60 pt-4 mt-6 flex items-center justify-between text-[11px] text-gray-500 font-mono">
           <div className="flex items-center gap-2">
             <Compass className="w-4 h-4 text-editorial-accent" />
-            <span className="font-sans font-bold tracking-widest text-[9px]">HEURISTICS COMPLIANT</span>
+            <span className="font-sans font-medium tracking-widest text-[9px]">HEURISTICS COMPLIANT</span>
           </div>
-          <span className="font-sans font-bold tracking-widest text-[9px] text-right">ALL SEALS VERIFIED</span>
+          <span className="font-sans font-medium tracking-widest text-[9px] text-right">ALL SEALS VERIFIED</span>
         </div>
       </div>
 
@@ -193,7 +203,7 @@ export default function PassportProfile({ data }: PassportProfileProps) {
         <div className="absolute top-0 left-0 w-full h-[2px] bg-editorial-accent"></div>
         
         <div className="flex items-center justify-between mb-4 w-full">
-          <h3 className="text-xs uppercase font-sans font-bold tracking-[0.2em] text-editorial-paper">Trait Analysis</h3>
+          <h3 className="text-xs uppercase font-sans font-semibold tracking-[0.2em] text-editorial-paper">Trait Analysis</h3>
           <div className="h-[1px] flex-1 bg-editorial-border mx-3"></div>
         </div>
         

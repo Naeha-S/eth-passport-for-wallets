@@ -181,15 +181,18 @@ export default function ExecutionEfficiency({ stats, nickname, address }: Execut
 
       {/* Diagnostic Terminal Simulation (Highly technical look) */}
       <div className="bg-[#0b0c0d] border border-editorial-border p-4 font-mono text-[10px] space-y-2 relative">
-        <div className="flex justify-between items-center text-gray-500 text-[9px] border-b border-gray-900 pb-2">
+        <div className="flex justify-between items-center text-gray-500 text-[9px] border-b border-gray-900/60 pb-2">
           <span>GAS OPTIMIZATION DIAGNOSTIC STREAM</span>
-          <span className="text-editorial-accent animate-pulse">● SYSTEMS LIVE</span>
+          <span className="text-editorial-accent animate-pulse flex items-center gap-1"><span>●</span> SYSTEMS LIVE</span>
         </div>
         <div className="space-y-1 text-gray-400 select-none">
           <p><span className="text-gray-600">[02:14:10]</span> INITIATING MULTI-EPOCH EXECUTION EFFICIENCY REPORT FOR {address.slice(0, 16)}...</p>
           <p><span className="text-gray-600">[02:14:11]</span> RESOLVED {stats.transactionsCount} HISTORICAL PAYLOADS ON MAINNET AND LAYER-2 TARGET CORES</p>
           <p><span className="text-gray-600">[02:14:12]</span> ANALYSIS: ESTIMATED RECOVERABLE UNUSED GAS LIMIT = <span className="text-editorial-accent font-bold">{(stats.transactionsCount * 12300 * (1 - efficiencyScore/100)).toFixed(0)} units</span></p>
-          <p><span className="text-[#62929e]">[02:14:13] EVM-VERDICT:</span> SOLID ROUTING CONFIGURATION. MEMPOOL LEAK VULNERABILITY LEVEL: LOW-MEDIUM</p>
+          <p>
+            <span className="text-[#62929e]">[02:14:13] EVM-VERDICT:</span> SOLID ROUTING CONFIGURATION. MEMPOOL LEAK VULNERABILITY LEVEL: LOW-MEDIUM
+            <span className="inline-block w-1.5 h-3 bg-editorial-accent ml-1.5 align-middle animate-[pulse_0.8s_infinite]" />
+          </p>
         </div>
       </div>
 
